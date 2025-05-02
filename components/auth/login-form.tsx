@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import * as z from 'zod';
 
 import { CardWrapper } from '@/components/auth/card-wrapper';
@@ -29,6 +30,7 @@ export const LoginForm = () => {
 
 	const onSubmit = (values: z.infer<typeof LoginSchema>) => {
 		console.log('[onSubmit - values]: ', values);
+		toast.success('Login Success!');
 	};
 
 	return (
