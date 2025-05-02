@@ -1,6 +1,7 @@
 'use client';
 
 import { Header } from '@/components/auth/header';
+import { Social } from '@/components/auth/social';
 
 import {
 	Card,
@@ -29,7 +30,12 @@ export const CardWrapper = ({
 			<CardHeader>
 				<Header label={headerLabel} />
 			</CardHeader>
-			{children}
+			<CardContent>{children}</CardContent>
+			{showSocial && (
+				<CardFooter>
+					<Social />
+				</CardFooter>
+			)}
 		</Card>
 	);
 };
