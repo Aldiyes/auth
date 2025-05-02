@@ -1,3 +1,5 @@
+import { LoginForm } from '@/components/auth/login-form';
+
 export default function LoginButton() {
-	return <div>Login Page!</div>;
+	return <LoginForm />;
 }
