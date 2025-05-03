@@ -24,3 +24,8 @@ export const RegisterSchema = z.object({
 		message: 'Minimum 6 characters required',
 	}),
 });
+
+export const sessionSchema = z.object({
+	id: z.string(),
+	role: z.enum(['admin', 'user']),
+});

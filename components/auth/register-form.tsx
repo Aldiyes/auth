@@ -8,6 +8,7 @@ import * as z from 'zod';
 import { CardWrapper } from '@/components/auth/card-wrapper';
 import { RegisterSchema } from '@/schemas';
 
+import { register } from '@/actions/register';
 import { Button } from '@/components/ui/button';
 import {
 	Form,
@@ -18,8 +19,13 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
 export const RegisterForm = () => {
+	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
+
 	const form = useForm<z.infer<typeof RegisterSchema>>({
 		resolver: zodResolver(RegisterSchema),
 		defaultValues: {
@@ -30,8 +36,16 @@ export const RegisterForm = () => {
 	});
 
 	const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-		console.log('[onSubmit - values]: ', values);
-		toast.success('Register Success!');
+		startTransition(() => {
+			register(values)
+				.then((data) => {
+					toast.success(`Welcome ${data.success}`);
+					router.push('/user');
+				})
+				.catch((error) => {
+					toast.error(error?.message);
+				});
+		});
 	};
 
 	return (
@@ -89,7 +103,7 @@ export const RegisterForm = () => {
 						/>
 					</div>
 					<Button type="submit" className="w-full">
-						Register
+						{isPending ? 'Loading' : 'Register'}
 					</Button>
 				</form>
 			</Form>
