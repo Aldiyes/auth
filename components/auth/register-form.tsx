@@ -39,11 +39,15 @@ export const RegisterForm = () => {
 		startTransition(() => {
 			register(values)
 				.then((data) => {
-					toast.success(`Welcome ${data.success}`);
-					router.push('/user');
+					if (data?.error) {
+						toast.error(data.error || 'Something went wrong');
+					} else {
+						toast.success(`Welcome ${data.success}`);
+						router.push('/user');
+					}
 				})
-				.catch((error) => {
-					toast.error(error?.message);
+				.catch(() => {
+					toast.error('Something went wrong');
 				});
 		});
 	};
