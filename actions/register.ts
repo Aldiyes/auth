@@ -1,7 +1,6 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import * as z from 'zod';
 
 import { RegisterSchema } from '@/schemas';

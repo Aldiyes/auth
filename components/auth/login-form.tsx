@@ -1,6 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import * as z from 'zod';
@@ -8,6 +10,7 @@ import * as z from 'zod';
 import { CardWrapper } from '@/components/auth/card-wrapper';
 import { LoginSchema } from '@/schemas';
 
+import { login } from '@/actions/login';
 import { Button } from '@/components/ui/button';
 import {
 	Form,
@@ -20,6 +23,8 @@ import {
 import { Input } from '@/components/ui/input';
 
 export const LoginForm = () => {
+	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
 	const form = useForm<z.infer<typeof LoginSchema>>({
 		resolver: zodResolver(LoginSchema),
 		defaultValues: {
@@ -29,8 +34,20 @@ export const LoginForm = () => {
 	});
 
 	const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-		console.log('[onSubmit - values]: ', values);
-		toast.success('Login Success!');
+		startTransition(() => {
+			login(values)
+				.then((data) => {
+					if (data?.error) {
+						toast.error(data.error);
+					} else {
+						toast.success(`Welcome back ${data.success}`);
+						router.push('/user');
+					}
+				})
+				.catch(() => {
+					toast.error('Something went wrong');
+				});
+		});
 	};
 
 	return (
