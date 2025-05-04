@@ -29,12 +29,11 @@ export const createUserSession = async (
 	cookies: Pick<Cookies, 'set'>
 ) => {
 	const sessionId = crypto.randomBytes(512).toString('hex').normalize();
-	await db.user.update({
-		where: {
-			id: user.id,
-		},
+	await db.session.create({
 		data: {
-			sessionId,
+			id: sessionId,
+			userId: user.id,
+			expiresAt: new Date(Date.now() + SESSION_EXPIRATION_SECONDS * 1000),
 		},
 	});
 
@@ -49,13 +48,12 @@ export const getUserFromSession = (cookies: Pick<Cookies, 'get'>) => {
 };
 
 const getUserSessionById = async (sessionId: string) => {
-	const currentUser = await db.user.findFirst({
-		where: {
-			sessionId,
-		},
+	const session = await db.session.findUnique({
+		where: { id: sessionId },
+		include: { user: true },
 	});
 
-	const { success, data: user } = sessionSchema.safeParse(currentUser);
+	const { success, data: user } = sessionSchema.safeParse(session?.user);
 
 	return success ? user : null;
 };
