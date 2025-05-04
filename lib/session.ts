@@ -22,7 +22,7 @@ export type Cookies = {
 };
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
-const COKKIE_SESSION_KEY = 'session-id';
+const COOKIE_SESSION_KEY = 'session-id';
 
 export const createUserSession = async (
 	user: userSession,
@@ -41,7 +41,7 @@ export const createUserSession = async (
 };
 
 export const getUserFromSession = (cookies: Pick<Cookies, 'get'>) => {
-	const sessionId = cookies.get(COKKIE_SESSION_KEY)?.value;
+	const sessionId = cookies.get(COOKIE_SESSION_KEY)?.value;
 	if (sessionId == null) return null;
 
 	return getUserSessionById(sessionId);
@@ -58,8 +58,22 @@ const getUserSessionById = async (sessionId: string) => {
 	return success ? user : null;
 };
 
+export const removeUserFormSession = async (
+	cookies: Pick<Cookies, 'get' | 'delete'>
+) => {
+	const sessionId = cookies.get(COOKIE_SESSION_KEY)?.value;
+
+	await db.session.delete({
+		where: {
+			id: sessionId,
+		},
+	});
+
+	cookies.delete(COOKIE_SESSION_KEY);
+};
+
 const createCookie = async (data: string, cookies: Pick<Cookies, 'set'>) => {
-	cookies.set(COKKIE_SESSION_KEY, data, {
+	cookies.set(COOKIE_SESSION_KEY, data, {
 		secure: true,
 		httpOnly: true,
 		sameSite: 'lax',
